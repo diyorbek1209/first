@@ -1,0 +1,111 @@
+CREATE DATABASE University;
+
+
+CREATE TABLE Student (
+    id BIGINT PRIMARY KEY,
+    name VARCHAR(25),
+    birthday DATE,
+    group_id INT
+);
+
+CREATE TABLE Subject (
+    id BIGINT PRIMARY KEY,
+    name VARCHAR(25),
+    description VARCHAR(25),
+    grade INT
+);
+
+CREATE TABLE PaymentType (
+    id BIGINT PRIMARY KEY,
+    name VARCHAR(25)
+);
+
+CREATE TABLE Payment (
+    id BIGINT PRIMARY KEY,
+    type_id BIGINT,
+    amount DECIMAL,
+    student_id BIGINT,
+    payment_date DATE,
+    FOREIGN KEY (type_id) REFERENCES PaymentType(id),
+    FOREIGN KEY (student_id) REFERENCES Student(id)
+);
+
+CREATE TABLE Mark (
+    id BIGINT PRIMARY KEY,
+    student_id BIGINT,
+    subject_id BIGINT,
+    mark INT,
+    FOREIGN KEY (student_id) REFERENCES Student(id),
+    FOREIGN KEY (subject_id) REFERENCES Subject(id)
+);
+
+-- task 2
+
+INSERT INTO Student (name, birthday, group_id)
+VALUES 
+    ('John', '2013-01-01', 1),
+    ('Chris', '2013-02-02', 1),
+    ('Carl', '2013-03-03', 1),
+    ('Oliver', '2012-01-01', 2),
+    ('James', '2012-02-02', 2),
+    ('Lucas', '2012-03-03', 2),
+    ('Henry', '2012-04-04', 2),
+    ('Jacob', '2011-01-01', 3),
+    ('Logan', '2011-02-02', 3);
+
+INSERT INTO Subject (name, description, grade)
+VALUES 
+    ('Art and music', 'Art and music for 1 grade', 1),
+    ('Geography', 'Geography and history for 2 grade', 2),
+    ('PE', 'PE and math for 3 grade', 3),
+    ('Science', 'Science and IT for 4 grade', 3),
+    ('IT', 'Science and IT for 4 grade', 4),
+    ('Math', 'PE and math for 3 grade', 3),
+    ('History', 'Geography and history for 2 grade', 2),
+    ('Music', 'Art and music for 1 grade', 1);
+
+INSERT INTO PaymentType (name)
+VALUES 
+    ('DAILY'),
+    ('WEEKLY'),
+    ('MONTHLY');
+
+INSERT INTO Payment (type_id, amount, student_id, payment_date)
+VALUES 
+    ((SELECT id FROM PaymentType WHERE name = 'WEEKLY'), 100, (SELECT id FROM Student WHERE name = 'john'), '2022-03-01'),
+    ((SELECT id FROM PaymentType WHERE name = 'MONTHLY'), 500, (SELECT id FROM Student WHERE name = 'Oliver'), '2024-07-05'),
+    ((SELECT id FROM PaymentType WHERE name = 'WEEKLY'), 100, (SELECT id FROM Student WHERE name = 'Henry'), '2024-03-10'),
+    ((SELECT id FROM PaymentType WHERE name = 'DAILY'), 20, (SELECT id FROM Student WHERE name = 'James'), '2021-08-14');
+
+INSERT INTO Mark (student_id, subject_id, mark)
+VALUES 
+    ((SELECT id FROM Student WHERE name = 'Chris'), (SELECT id FROM Subject WHERE name = 'Art'), 8),
+    ((SELECT id FROM Student WHERE name = 'Oliver'), (SELECT id FROM Subject WHERE name = 'History'), 5),
+    ((SELECT id FROM Student WHERE name = 'James'), (SELECT id FROM Subject WHERE name = 'Geography'), 9),
+    ((SELECT id FROM Student WHERE name = 'Jacob'), (SELECT id FROM Subject WHERE name = 'Math'), 4),
+    ((SELECT id FROM Student WHERE name = 'Logan'), (SELECT id FROM Subject WHERE name = 'PE'), 9);
+-- task 3
+ALTER TABLE Student MODIFY COLUMN birthday DATE NOT NULL;
+
+ALTER TABLE Mark MODIFY COLUMN mark INT CHECK (mark BETWEEN 1 AND 10);
+ALTER TABLE Mark MODIFY COLUMN student_id BIGINT NOT NULL;
+ALTER TABLE Mark MODIFY COLUMN subject_id BIGINT NOT NULL;
+
+ALTER TABLE Subject MODIFY COLUMN grade INT CHECK (grade BETWEEN 1 AND 5);
+
+ALTER TABLE PaymentType ADD unique_name UNIQUE (name);
+
+ALTER TABLE Payment MODIFY COLUMN type_id BIGINT NOT NULL;
+ALTER TABLE Payment MODIFY COLUMN amount DECIMAL NOT NULL;
+ALTER TABLE Payment MODIFY COLUMN payment_date DATE NOT NULL;
+-- task 4
+
+SELECT * FROM Student;
+
+SELECT * FROM Student LIMIT 50;
+
+SELECT name FROM Student;
+
+SELECT DISTINCT(amount) FROM Payment;
+
+
